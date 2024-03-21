@@ -2,13 +2,28 @@
 //  WeatherAppTests.swift
 //  WeatherAppTests
 //
-//  Created by Вадим Попов on 19.03.2024.
+//  Created by Vadim Popov on 19.03.2024.
 //
+
+import CoreLocation
 
 import XCTest
 @testable import WeatherApp
 
+
 final class WeatherAppTests: XCTestCase {
+    
+    let coordinatesToTest = [
+        CLLocationCoordinate2DMake(59.9104, 30.2842),
+        CLLocationCoordinate2DMake(29.978479, -91.973998),
+        CLLocationCoordinate2DMake(-27.3106, -113.6213),
+        CLLocationCoordinate2DMake(43.6249, 108.9219),
+        CLLocationCoordinate2DMake(5.3346, 27.8263),
+        CLLocationCoordinate2DMake(67.4297, 134.7985),
+        CLLocationCoordinate2DMake(12.9212, -152.6951),
+        CLLocationCoordinate2DMake(40.5233, 86.7886),
+        CLLocationCoordinate2DMake(6.9624, -40.2732),
+    ]
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -17,19 +32,38 @@ final class WeatherAppTests: XCTestCase {
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
+    
+    func testMomentumOWFS() throws {
+        let forecastService: ForecastProtocol = Interactor.instance.getService(for: OpenWeatherForecast.self)
+        
+        coordinatesToTest.enumerated().forEach { testIndex, coordinates in
+            let semaphore = DispatchSemaphore(value: 0)
+            
+            forecastService.momentumPrediction(
+                coordinate: coordinates,
+                completion: { weatherData in
+                    XCTAssertNotNil(weatherData)
+                    semaphore.signal()
+                }
+            )
+            semaphore.wait()
+        }
     }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
+    
+    func testLongTermOWFS() throws {
+        let forecastService: ForecastProtocol = Interactor.instance.getService(for: OpenWeatherForecast.self)
+        
+        coordinatesToTest.enumerated().forEach { testIndex, coordinates in
+            let semaphore = DispatchSemaphore(value: 0)
+            
+            forecastService.longTermPrediction(
+                coordinate: coordinates,
+                completion: { weatherDataList in
+                    XCTAssertNotNil(weatherDataList)
+                    semaphore.signal()
+                }
+            )
+            semaphore.wait()
         }
     }
 
