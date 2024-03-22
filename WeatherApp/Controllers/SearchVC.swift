@@ -14,11 +14,17 @@ class SearchVC: UIViewController {
     
     public func preparedForTabBar() -> Self {
         let icon = UIImage(systemName: "magnifyingglass")
+        let colorSelected = UIColor(red: 0.984375, green: 0.7578125, blue: 0.359375, alpha: 1)
+        let colorNonSelected = UIColor.white
+        
         tabBarItem = UITabBarItem(
-            title: "",
-            image: icon?.withTintColor(.white, renderingMode: .alwaysOriginal),
-            selectedImage: icon?.withTintColor(UIColor(red: 0.984375, green: 0.7578125, blue: 0.359375, alpha: 1), renderingMode: .alwaysOriginal)
+            title: "Search",
+            image: icon?.withTintColor(colorNonSelected, renderingMode: .alwaysOriginal),
+            selectedImage: icon?.withTintColor(colorSelected, renderingMode: .alwaysOriginal)
         )
+        
+        UITabBar.appearance().tintColor = colorSelected
+        UITabBar.appearance().unselectedItemTintColor = colorNonSelected
         
         return self
     }

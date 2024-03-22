@@ -54,6 +54,7 @@ class OpenWeatherForecast: ForecastProtocol {
                 
                 let result = WeatherData(
                     timestamp: parsedDict["dt"] as! Int,
+                    timezone: parsedDict["timezone"] as! Int,
                     
                     coordinate: CLLocationCoordinate2D(
                         latitude: coordData?["lat"] as! Double,
@@ -137,6 +138,7 @@ class OpenWeatherForecast: ForecastProtocol {
                     
                     let resultItem = WeatherData(
                         timestamp: listItemData["dt"] as! Int,
+                        timezone: cityData["timezone"] as! Int,
                         
                         coordinate: CLLocationCoordinate2D(
                             latitude: coordData?["lat"] as! Double,

@@ -80,6 +80,7 @@ struct WeatherData {
     }
 
     let timestamp: Int
+    let timezone: Int
     let coordinate: CLLocationCoordinate2D
     
     let main: Main
