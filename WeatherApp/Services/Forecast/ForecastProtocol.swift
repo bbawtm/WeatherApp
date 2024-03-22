@@ -22,6 +22,46 @@ struct WeatherData {
     }
 
     struct Weather {
+        
+        enum Code {
+            case thunderstorm
+            case drizzle
+            case rain
+            case snow
+            case atmosphere
+            case clear
+            case clouds
+            
+            static func from(string: String) -> Self {
+                if string == "Thunderstorm" {
+                    return .thunderstorm
+                }
+                
+                if string == "Drizzle" {
+                    return .drizzle
+                }
+                
+                if string == "Rain" {
+                    return .rain
+                }
+                
+                if string == "Snow" {
+                    return .snow
+                }
+                
+                if string == "Atmosphere" {
+                    return .atmosphere
+                }
+                
+                if string == "Clear" {
+                    return .clear
+                }
+                
+                return .clouds
+            }
+        }
+        
+        let code: Code
         let title: String
         let description: String
         

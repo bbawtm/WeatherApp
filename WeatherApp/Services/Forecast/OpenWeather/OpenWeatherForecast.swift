@@ -72,6 +72,7 @@ class OpenWeatherForecast: ForecastProtocol {
                     ),
                     
                     weather: .init(
+                        code: .from(string: weatherData["main"] as! String),
                         title: weatherData["main"] as! String,
                         description: weatherData["description"] as! String,
                         cloudsVolume: (parsedDict["clouds"] as? [String: Any])?["all"] as? Int,
@@ -154,6 +155,7 @@ class OpenWeatherForecast: ForecastProtocol {
                         ),
                         
                         weather: .init(
+                            code: .from(string: weatherData["main"] as! String),
                             title: weatherData["main"] as! String,
                             description: weatherData["description"] as! String,
                             cloudsVolume: (listItemData["clouds"] as? [String: Any])?["all"] as? Int,

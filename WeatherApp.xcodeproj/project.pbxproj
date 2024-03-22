@@ -27,6 +27,7 @@
 		945DFDDD2BAB6DEC0085856C /* ForecastModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945486C32BAAE6CD00B0FF64 /* ForecastModel.swift */; };
 		945DFDDF2BAC9CE10085856C /* LocationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945DFDDE2BAC9CE10085856C /* LocationModel.swift */; };
 		945DFDE22BACD9380085856C /* Inter.ttc in Resources */ = {isa = PBXBuildFile; fileRef = 945DFDE12BACD9380085856C /* Inter.ttc */; };
+		945DFDE52BAD67570085856C /* Component4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945DFDE42BAD67570085856C /* Component4.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +60,7 @@
 		945486D52BAAE87100B0FF64 /* Interactor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interactor.swift; sourceTree = "<group>"; };
 		945DFDDE2BAC9CE10085856C /* LocationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationModel.swift; sourceTree = "<group>"; };
 		945DFDE12BACD9380085856C /* Inter.ttc */ = {isa = PBXFileReference; lastKnownFileType = file; path = Inter.ttc; sourceTree = "<group>"; };
+		945DFDE42BAD67570085856C /* Component4.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Component4.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,11 +102,12 @@
 		9454868C2BAA294C00B0FF64 /* WeatherApp */ = {
 			isa = PBXGroup;
 			children = (
-				945DFDE02BACD8FC0085856C /* Fonts */,
 				945486C52BAAE6DF00B0FF64 /* Services */,
 				945486D52BAAE87100B0FF64 /* Interactor.swift */,
 				945486C22BAAE26C00B0FF64 /* Models */,
 				945486BD2BAA29EA00B0FF64 /* Controllers */,
+				945DFDE32BAD67390085856C /* Views */,
+				945DFDE02BACD8FC0085856C /* Fonts */,
 				9454868D2BAA294C00B0FF64 /* AppDelegate.swift */,
 				9454868F2BAA294C00B0FF64 /* SceneDelegate.swift */,
 				945486962BAA294D00B0FF64 /* Assets.xcassets */,
@@ -174,6 +177,14 @@
 				945DFDE12BACD9380085856C /* Inter.ttc */,
 			);
 			path = Fonts;
+			sourceTree = "<group>";
+		};
+		945DFDE32BAD67390085856C /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				945DFDE42BAD67570085856C /* Component4.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -277,6 +288,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				945DFDE52BAD67570085856C /* Component4.swift in Sources */,
 				945486C82BAAE71C00B0FF64 /* ForecastProtocol.swift in Sources */,
 				945486D22BAAE7F300B0FF64 /* SearchVC.swift in Sources */,
 				945486D02BAAE7EA00B0FF64 /* MainVC.swift in Sources */,
