@@ -36,7 +36,9 @@ class LocationModel: NSObject, CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        updationPublisher.send(currentLocation)
+        if let currentLocation {
+            updationPublisher.send(currentLocation)
+        }
     }
     
     public var currentLocation: CLLocationCoordinate2D? {

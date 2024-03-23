@@ -183,7 +183,7 @@ class MainVC: UIViewController {
             centralDescriptionComponent4.view.topAnchor.constraint(equalTo: centralDegreesComponent4.view.bottomAnchor),
             centralDescriptionComponent4.view.centerXAnchor.constraint(equalTo: centralContainer.centerXAnchor),
             
-            centralSubscriptComponent4.view.topAnchor.constraint(equalTo: centralDescriptionComponent4.view.bottomAnchor, constant: 5),
+            centralSubscriptComponent4.view.topAnchor.constraint(equalTo: centralDescriptionComponent4.view.bottomAnchor, constant: 7),
             centralSubscriptComponent4.view.centerXAnchor.constraint(equalTo: centralContainer.centerXAnchor),
             centralSubscriptComponent4.view.bottomAnchor.constraint(equalTo: centralContainer.bottomAnchor),
             
@@ -237,7 +237,9 @@ class MainVC: UIViewController {
             let forecastPublisher = forecastModel?.momentumForecast(forCoordinate: coordinate)
             
             let updationClosure: (WeatherData?) -> Void = { [weak self] (weatherData: WeatherData?) in
-                self?.updateViewMomentumPublisher.send(weatherData)
+                if let weatherData {
+                    self?.updateViewMomentumPublisher.send(weatherData)
+                }
             }
             updationClosure(forecastPublisher?.value)
             
@@ -251,8 +253,9 @@ class MainVC: UIViewController {
             let forecastPublisher = forecastModel?.longTermForecast(forCoordinate: coordinate)
             
             let updationClosure: ([WeatherData]?) -> Void = { [weak self] (weatherData: [WeatherData]?) in
-//                print(weatherData == nil ? "254: nil" : "254: not nil")
-                self?.updateViewLongTermPublisher.send(weatherData)
+                if let weatherData {
+                    self?.updateViewLongTermPublisher.send(weatherData)
+                }
             }
             updationClosure(forecastPublisher?.value)
             

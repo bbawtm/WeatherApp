@@ -189,7 +189,9 @@ class CentralSubscriptComponent4: Component4 {
                 return
             }
             
-            self.view.text = weatherData.weather.description.capitalizingFirstLetter()
+            let description = weatherData.weather.description.capitalizingFirstLetter()
+            let feelsLike = Int(weatherData.main.feelsLike.rounded())
+            self.view.text = "\(description) | Feels like \(feelsLike)º"
         }
     }
 }

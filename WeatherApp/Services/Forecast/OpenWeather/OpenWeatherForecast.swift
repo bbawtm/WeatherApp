@@ -63,7 +63,7 @@ class OpenWeatherForecast: ForecastProtocol {
                     
                     main: .init(
                         temperature: (mainData["temp"] as! Double) - 273.15,
-                        feelsLike: mainData["feels_like"] as! Double,
+                        feelsLike: mainData["feels_like"] as! Double - 273.15,
                         pressure: mainData["pressure"] as! Int,
                         humidity: mainData["humidity"] as! Int,
                         temperatureMin: (mainData["temp_min"] as! Double) - 273.15,
@@ -147,7 +147,7 @@ class OpenWeatherForecast: ForecastProtocol {
                         
                         main: .init(
                             temperature: (mainData["temp"] as! Double) - 273.15,
-                            feelsLike: mainData["feels_like"] as! Double,
+                            feelsLike: mainData["feels_like"] as! Double - 273.15,
                             pressure: mainData["pressure"] as! Int,
                             humidity: mainData["humidity"] as! Int,
                             temperatureMin: (mainData["temp_min"] as! Double) - 273.15,

@@ -9,7 +9,7 @@ import UIKit
 import Combine
 
 
-class CalendarTableViewCell: UITableViewCell {
+private class CalendarTableViewCell: UITableViewCell {
     
     let leftLabel: UILabel = {
         let label = UILabel()
@@ -19,11 +19,8 @@ class CalendarTableViewCell: UITableViewCell {
         return label
     }()
     
-    let rightImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        return imageView
-    }()
+    let rightImageComponentDay: CentralImageComponent4
+    let rightImageComponentNight: CentralImageComponent4
     
     let rightLabel: UILabel = {
         let label = UILabel()
@@ -33,21 +30,38 @@ class CalendarTableViewCell: UITableViewCell {
         return label
     }()
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    init(model: [WeatherData]?) {
+        rightImageComponentDay = CentralImageComponent4(
+            listen: CurrentValueSubject<WeatherData?, Error>(
+                model?[Int((model?.count ?? 0) * 1 / 4)]
+            ).eraseToAnyPublisher()
+        )
+        
+        rightImageComponentNight = CentralImageComponent4(
+            listen: CurrentValueSubject<WeatherData?, Error>(
+                model?[Int((model?.count ?? 0) * 3 / 4)]
+            ).eraseToAnyPublisher()
+        )
+        
+        super.init(style: .default, reuseIdentifier: "calendarTableViewCell")
         
         contentView.addSubview(leftLabel)
-        contentView.addSubview(rightImageView)
+        contentView.addSubview(rightImageComponentDay.view)
+        contentView.addSubview(rightImageComponentNight.view)
         contentView.addSubview(rightLabel)
         
         NSLayoutConstraint.activate([
             leftLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             leftLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             
-            rightImageView.trailingAnchor.constraint(equalTo: rightLabel.leadingAnchor, constant: -8),
-            rightImageView.leadingAnchor.constraint(greaterThanOrEqualTo: leftLabel.trailingAnchor, constant: 8),
-            rightImageView.widthAnchor.constraint(equalToConstant: 40),
-            rightImageView.heightAnchor.constraint(equalToConstant: 40),
+            rightImageComponentDay.view.leadingAnchor.constraint(greaterThanOrEqualTo: leftLabel.trailingAnchor, constant: 8),
+            rightImageComponentDay.view.widthAnchor.constraint(equalToConstant: 35),
+            rightImageComponentDay.view.heightAnchor.constraint(equalToConstant: 35),
+            
+            rightImageComponentNight.view.leadingAnchor.constraint(equalTo: rightImageComponentDay.view.trailingAnchor, constant: 8),
+            rightImageComponentNight.view.trailingAnchor.constraint(equalTo: rightLabel.leadingAnchor, constant: -8),
+            rightImageComponentNight.view.widthAnchor.constraint(equalToConstant: 35),
+            rightImageComponentNight.view.heightAnchor.constraint(equalToConstant: 35),
             
             rightLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             rightLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
@@ -122,7 +136,7 @@ private class CalendarTable: NSObject, UITableViewDelegate, UITableViewDataSourc
         
         // Cell
         
-        let cell = CalendarTableViewCell()
+        let cell = CalendarTableViewCell(model: lastFetchedModel)
         cell.leftLabel.text = dateText
         cell.rightLabel.text = degreesText
         cell.backgroundColor = UIColor(red: 0.042, green: 0.047, blue: 0.119, alpha: 1)
