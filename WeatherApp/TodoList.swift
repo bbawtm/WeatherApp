@@ -6,3 +6,5 @@
 //
 
 // TODO: Add schema of application
+
+// TODO: On change location don't change place if its weather is not ready

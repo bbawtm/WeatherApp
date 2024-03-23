@@ -10,364 +10,6 @@ import CoreLocation
 import Combine
 
 
-extension String {
-    func capitalizingFirstLetter() -> String {
-        return prefix(1).uppercased() + self.lowercased().dropFirst()
-    }
-}
-
-// MARK: - Head Container Items
-
-private class HeadDayDescriptionComponent4: Component4 {
-    typealias Model = Any?
-    typealias ConcreteView = UILabel
-    
-    var model: Model = nil
-    var view: ConcreteView
-    
-    init() {
-        let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "en_US")
-        dateFormatter.dateFormat = "MMM dd yyyy"
-        
-        let lbl = UILabel()
-        lbl.text = "Today, \(dateFormatter.string(from: Date.now))"
-        lbl.font = UIFont(name: "Inter", size: 17)
-        lbl.textColor = .white
-        lbl.translatesAutoresizingMaskIntoConstraints = false
-        
-        view = lbl
-    }
-    
-    func requestUpdates(withModel model: Model) {
-    }
-}
-
-private class HeadLocationDescriptionComponent4: Component4 {
-    typealias Model = Any?
-    typealias ConcreteView = UILabel
-    
-    var model: Model = nil
-    var view: ConcreteView
-    
-    private weak var locationModel = LocationModel.instance
-    private var modelSubscribtion: AnyCancellable?
-    
-    init() {
-        let lbl = UILabel()
-        
-        lbl.textAlignment = .center
-        lbl.attributedText = Self.locationLabelAttributedText(string: "Updating...")
-        lbl.font = UIFont(name: "Inter", size: 14)
-        lbl.textColor = UIColor(red: 0.69921875, green: 0.6953125, blue: 0.71484375, alpha: 1)
-        lbl.translatesAutoresizingMaskIntoConstraints = false
-        
-        view = lbl
-        
-        modelSubscribtion = locationModel?.updationPublisher.sink(
-            receiveCompletion: { _ in },
-            receiveValue: { [weak self] _ in
-                self?.requestUpdates(withModel: nil)
-            }
-        )
-    }
-    
-    func requestUpdates(withModel model: Model) {
-        locationModel?.requestCurrentLocationRepresentation { [weak self] representation in
-            guard let self else { return }
-            self.view.attributedText = Self.locationLabelAttributedText(string: representation)
-        }
-    }
-    
-    private static func locationLabelAttributedText(string: String) -> NSAttributedString {
-        let completeText = NSMutableAttributedString(string: "")
-        
-        if let mapPinImage = UIImage(named: "map.pin") {
-            completeText.append(NSAttributedString(attachment: NSTextAttachment(image: mapPinImage)))
-            completeText.append(NSAttributedString(string: " "))
-        }
-        
-        let locationDescription = NSAttributedString(string: string)
-        completeText.append(locationDescription)
-        
-        return completeText
-    }
-}
-
-// MARK: - Central Container Items
-
-private class CentralImageComponent4: Component4 {
-    typealias Model = WeatherData?
-    typealias ConcreteView = UIImageView
-    
-    var model: Model = nil
-    var view: ConcreteView
-    
-    private var modelSubscribtion: AnyCancellable?
-    
-    init(listen modelPublisher: AnyPublisher<Model, Error>) {
-        let image = UIImage(named: "cloud.sun")
-        
-        let imgView = UIImageView(image: image)
-        imgView.contentMode = .scaleAspectFill
-        imgView.translatesAutoresizingMaskIntoConstraints = false
-        
-        view = imgView
-        
-        modelSubscribtion = modelPublisher.sink { _ in } receiveValue: { [weak self] weatherData in
-            self?.requestUpdates(withModel: weatherData)
-        }
-    }
-    
-    func requestUpdates(withModel model: Model) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
-            
-            guard let weatherData = model else {
-                self.view.image = UIImage(named: "cloud.sun")
-                self.view.contentMode = .scaleAspectFill
-                return
-            }
-            
-            switch weatherData.weather.code {
-            case .thunderstorm:
-                self.view.image = UIImage(named: "thunder")
-                self.view.contentMode = .scaleAspectFit
-                
-            case .drizzle:
-                self.view.image = UIImage(named: "rain")
-                self.view.contentMode = .scaleAspectFit
-                
-            case .rain:
-                self.view.image = UIImage(named: "rain")
-                self.view.contentMode = .scaleAspectFit
-                
-            case .snow:
-                self.view.image = UIImage(named: "rain")
-                self.view.contentMode = .scaleAspectFit
-                
-            case .atmosphere:
-                self.view.image = UIImage(named: "atmosphere")
-                
-            case .clear:
-                self.view.image = UIImage(named: "sun")
-                self.view.contentMode = .scaleAspectFit
-                
-            case .clouds:
-                self.view.image = UIImage(named: "cloud.sunny")
-            }
-        }
-    }
-}
-
-private class CentralDegreesComponent4: Component4 {
-    typealias Model = WeatherData?
-    typealias ConcreteView = UILabel
-    
-    var model: Model = nil
-    var view: ConcreteView
-    
-    private var modelSubscribtion: AnyCancellable?
-    
-    init(listen modelPublisher: AnyPublisher<Model, Error>) {
-        let lbl = UILabel()
-        
-        lbl.text = "––º"
-        lbl.font = UIFont(name: "Inter", size: 70)
-        lbl.textColor = .white
-        lbl.translatesAutoresizingMaskIntoConstraints = false
-        
-        view = lbl
-        
-        modelSubscribtion = modelPublisher.sink { _ in } receiveValue: { [weak self] weatherData in
-            self?.requestUpdates(withModel: weatherData)
-        }
-    }
-    
-    func requestUpdates(withModel model: Model) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
-            
-            guard let weatherData = model else {
-                self.view.text = "––º"
-                return
-            }
-            
-            self.view.text = "\(Int(weatherData.main.temperature.rounded()))º"
-        }
-    }
-}
-
-private class CentralDescriptionComponent4: Component4 {
-    typealias Model = WeatherData?
-    typealias ConcreteView = UILabel
-    
-    var model: Model = nil
-    var view: ConcreteView
-    
-    private var modelSubscribtion: AnyCancellable?
-    
-    init(listen modelPublisher: AnyPublisher<Model, Error>) {
-        let lbl = UILabel()
-        
-        lbl.text = "Unknown weather"
-        lbl.font = UIFont(name: "Inter", size: 18)
-        lbl.textColor = .white
-        lbl.translatesAutoresizingMaskIntoConstraints = false
-        
-        view = lbl
-        
-        modelSubscribtion = modelPublisher.sink { _ in } receiveValue: { [weak self] weatherData in
-            self?.requestUpdates(withModel: weatherData)
-        }
-    }
-    
-    func requestUpdates(withModel model: Model) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
-            
-            guard let weatherData = model else {
-                self.view.text = "Unknown weather"
-                return
-            }
-            
-            self.view.text = weatherData.weather.title
-        }
-    }
-}
-
-private class CentralSubscriptComponent4: Component4 {
-    typealias Model = WeatherData?
-    typealias ConcreteView = UILabel
-    
-    var model: Model = nil
-    var view: ConcreteView
-    
-    private var modelSubscribtion: AnyCancellable?
-    
-    init(listen modelPublisher: AnyPublisher<Model, Error>) {
-        let lbl = UILabel()
-        
-        lbl.text = "Trying to update information..."
-        lbl.font = UIFont(name: "Inter", size: 14)
-        lbl.textColor = UIColor(red: 0.69921875, green: 0.6953125, blue: 0.71484375, alpha: 1)
-        lbl.translatesAutoresizingMaskIntoConstraints = false
-        
-        view = lbl
-        
-        modelSubscribtion = modelPublisher.sink { _ in } receiveValue: { [weak self] weatherData in
-            self?.requestUpdates(withModel: weatherData)
-        }
-    }
-    
-    func requestUpdates(withModel model: Model) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
-            
-            guard let weatherData = model else {
-                self.view.text = "Couldn't get the information"
-                return
-            }
-            
-            self.view.text = weatherData.weather.description.capitalizingFirstLetter()
-        }
-    }
-}
-
-// MARK: - Badges
-
-private class BadgeItemComponent4: Component4 {
-    typealias Model = WeatherData?
-    typealias ConcreteView = UIView
-    
-    var model: Model = nil
-    var view: ConcreteView
-    private var valueLabel: UILabel
-    
-    private var defaultValue: String
-    private var valueGetter: (Model) -> String
-    private var modelSubscribtion: AnyCancellable?
-    
-    init(
-        imageName: String,
-        titleText: String,
-        defaultValue: String,
-        valueGetter: @escaping (Model) -> String,
-        listen modelPublisher: AnyPublisher<Model, Error>
-    ) {
-        self.defaultValue = defaultValue
-        self.valueGetter = valueGetter
-        
-        let icon = UIImageView(image: UIImage(named: imageName))
-        icon.translatesAutoresizingMaskIntoConstraints = false
-        icon.contentMode = .scaleAspectFill
-        
-        let title = UILabel()
-        title.translatesAutoresizingMaskIntoConstraints = false
-        title.text = titleText
-        title.font = UIFont(name: "Inter", size: 16)
-        title.textColor = .white
-        
-        let titleContainer = UIView()
-        titleContainer.translatesAutoresizingMaskIntoConstraints = false
-        titleContainer.addSubview(icon)
-        titleContainer.addSubview(title)
-        
-        valueLabel = UILabel()
-        valueLabel.translatesAutoresizingMaskIntoConstraints = false
-        valueLabel.text = defaultValue
-        valueLabel.font = UIFont(name: "Inter", size: 14)
-        valueLabel.textColor = .white
-        
-        let content = UIView()
-        content.translatesAutoresizingMaskIntoConstraints = false
-        content.addSubview(titleContainer)
-        content.addSubview(valueLabel)
-        
-        let badge = UIView()
-        badge.translatesAutoresizingMaskIntoConstraints = false
-        badge.backgroundColor = UIColor(red: 0.2578125, green: 0.2578125, blue: 0.30859375, alpha: 1)
-        badge.layer.cornerRadius = 12
-        badge.addSubview(content)
-        
-        NSLayoutConstraint.activate([
-            icon.centerYAnchor.constraint(equalTo: titleContainer.centerYAnchor, constant: -2),
-            icon.leftAnchor.constraint(equalTo: titleContainer.leftAnchor),
-            
-            title.centerYAnchor.constraint(equalTo: titleContainer.centerYAnchor),
-            title.leftAnchor.constraint(equalTo: icon.rightAnchor, constant: 10),
-            title.rightAnchor.constraint(equalTo: titleContainer.rightAnchor),
-            
-            titleContainer.topAnchor.constraint(equalTo: content.topAnchor),
-            titleContainer.centerXAnchor.constraint(equalTo: content.centerXAnchor),
-            
-            valueLabel.topAnchor.constraint(equalTo: titleContainer.bottomAnchor, constant: 20),
-            valueLabel.centerXAnchor.constraint(equalTo: content.centerXAnchor),
-            valueLabel.bottomAnchor.constraint(equalTo: content.bottomAnchor),
-            
-            content.topAnchor.constraint(equalTo: badge.topAnchor, constant: 30),
-            content.bottomAnchor.constraint(equalTo: badge.bottomAnchor, constant: -22),
-            content.leftAnchor.constraint(equalTo: badge.leftAnchor, constant: 22),
-            content.rightAnchor.constraint(equalTo: badge.rightAnchor, constant: -20),
-        ])
-        
-        view = badge
-        
-        modelSubscribtion = modelPublisher.sink { _ in } receiveValue: { [weak self] weatherData in
-            self?.requestUpdates(withModel: weatherData)
-        }
-    }
-    
-    func requestUpdates(withModel model: Model) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
-            self.valueLabel.text = self.valueGetter(model)
-        }
-    }
-}
-
-// MARK: - Main View Controller
-
 class MainVC: UIViewController {
     
     private weak var forecastModel = ForecastModel.instance
@@ -507,6 +149,10 @@ class MainVC: UIViewController {
         return container
     }()
     
+    // MARK: Calendar
+    
+    private lazy var calendarComponent = CalendarComponent4(listen: updateViewLongTermPublisher)
+    
     // MARK: Common
     
     private func activateConstraints() {
@@ -541,7 +187,7 @@ class MainVC: UIViewController {
             centralSubscriptComponent4.view.centerXAnchor.constraint(equalTo: centralContainer.centerXAnchor),
             centralSubscriptComponent4.view.bottomAnchor.constraint(equalTo: centralContainer.bottomAnchor),
             
-            centralContainer.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            centralContainer.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: 30),
             centralContainer.centerXAnchor.constraint(equalTo: scrollView.contentLayoutGuide.centerXAnchor),
             
             // Badges container
@@ -570,9 +216,16 @@ class MainVC: UIViewController {
             badgesContainer.leftAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leftAnchor),
             badgesContainer.rightAnchor.constraint(equalTo: scrollView.contentLayoutGuide.rightAnchor),
             
+            calendarComponent.view.topAnchor.constraint(equalTo: badgesContainer.bottomAnchor, constant: 50),
+            calendarComponent.view.leftAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leftAnchor),
+            calendarComponent.view.rightAnchor.constraint(equalTo: scrollView.contentLayoutGuide.rightAnchor),
+            calendarComponent.view.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            
+            // Scroll view
+            
             scrollView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
             scrollView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
-            scrollView.topAnchor.constraint(equalTo: headContainer.bottomAnchor, constant: 50),
+            scrollView.topAnchor.constraint(equalTo: headContainer.bottomAnchor, constant: 20),
             scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             scrollView.contentLayoutGuide.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
@@ -580,17 +233,34 @@ class MainVC: UIViewController {
     }
     
     private func updateContent(forCoordinate coordinate: CLLocationCoordinate2D) {
-        let momentumForecastPublisher = forecastModel?.momentumForecast(forCoordinate: coordinate)
+        momentumForecastSubscriber = {
+            let forecastPublisher = forecastModel?.momentumForecast(forCoordinate: coordinate)
+            
+            let updationClosure: (WeatherData?) -> Void = { [weak self] (weatherData: WeatherData?) in
+                self?.updateViewMomentumPublisher.send(weatherData)
+            }
+            updationClosure(forecastPublisher?.value)
+            
+            return forecastPublisher?.sink(
+                receiveCompletion: { _ in },
+                receiveValue: updationClosure
+            )
+        }()
         
-        let momentumForecastUpdationClosure: (WeatherData?) -> Void = { [weak self] (weatherData: WeatherData?) in
-            self?.updateViewMomentumPublisher.send(weatherData)
-        }
-        momentumForecastUpdationClosure(momentumForecastPublisher?.value)
-        
-        momentumForecastSubscriber = momentumForecastPublisher?.sink(
-            receiveCompletion: { _ in },
-            receiveValue: momentumForecastUpdationClosure
-        )
+        longTermForecastSubscriber = {
+            let forecastPublisher = forecastModel?.longTermForecast(forCoordinate: coordinate)
+            
+            let updationClosure: ([WeatherData]?) -> Void = { [weak self] (weatherData: [WeatherData]?) in
+//                print(weatherData == nil ? "254: nil" : "254: not nil")
+                self?.updateViewLongTermPublisher.send(weatherData)
+            }
+            updationClosure(forecastPublisher?.value)
+            
+            return forecastPublisher?.sink(
+                receiveCompletion: { _ in },
+                receiveValue: updationClosure
+            )
+        }()
     }
     
     override func viewDidLoad() {
@@ -599,6 +269,7 @@ class MainVC: UIViewController {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(centralContainer)
         scrollView.addSubview(badgesContainer)
+        scrollView.addSubview(calendarComponent.view)
         
         view.addSubview(headContainer)
         view.addSubview(scrollView)

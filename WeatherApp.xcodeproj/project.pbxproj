@@ -28,6 +28,11 @@
 		945DFDDF2BAC9CE10085856C /* LocationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945DFDDE2BAC9CE10085856C /* LocationModel.swift */; };
 		945DFDE22BACD9380085856C /* Inter.ttc in Resources */ = {isa = PBXBuildFile; fileRef = 945DFDE12BACD9380085856C /* Inter.ttc */; };
 		945DFDE52BAD67570085856C /* Component4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945DFDE42BAD67570085856C /* Component4.swift */; };
+		945DFDE72BAE15A80085856C /* HeadComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945DFDE62BAE15A80085856C /* HeadComponents.swift */; };
+		945DFDE92BAE15F60085856C /* BadgeItemComponent4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945DFDE82BAE15F60085856C /* BadgeItemComponent4.swift */; };
+		945DFDEB2BAE162E0085856C /* CentralComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945DFDEA2BAE162E0085856C /* CentralComponents.swift */; };
+		945DFDED2BAE2CCE0085856C /* CalendarComponent4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945DFDEC2BAE2CCE0085856C /* CalendarComponent4.swift */; };
+		945DFDF12BAF153E0085856C /* ChartComponent4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945DFDF02BAF153E0085856C /* ChartComponent4.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,6 +66,11 @@
 		945DFDDE2BAC9CE10085856C /* LocationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationModel.swift; sourceTree = "<group>"; };
 		945DFDE12BACD9380085856C /* Inter.ttc */ = {isa = PBXFileReference; lastKnownFileType = file; path = Inter.ttc; sourceTree = "<group>"; };
 		945DFDE42BAD67570085856C /* Component4.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Component4.swift; sourceTree = "<group>"; };
+		945DFDE62BAE15A80085856C /* HeadComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadComponents.swift; sourceTree = "<group>"; };
+		945DFDE82BAE15F60085856C /* BadgeItemComponent4.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeItemComponent4.swift; sourceTree = "<group>"; };
+		945DFDEA2BAE162E0085856C /* CentralComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CentralComponents.swift; sourceTree = "<group>"; };
+		945DFDEC2BAE2CCE0085856C /* CalendarComponent4.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarComponent4.swift; sourceTree = "<group>"; };
+		945DFDF02BAF153E0085856C /* ChartComponent4.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartComponent4.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -183,6 +193,11 @@
 			isa = PBXGroup;
 			children = (
 				945DFDE42BAD67570085856C /* Component4.swift */,
+				945DFDE62BAE15A80085856C /* HeadComponents.swift */,
+				945DFDE82BAE15F60085856C /* BadgeItemComponent4.swift */,
+				945DFDEA2BAE162E0085856C /* CentralComponents.swift */,
+				945DFDEC2BAE2CCE0085856C /* CalendarComponent4.swift */,
+				945DFDF02BAF153E0085856C /* ChartComponent4.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -289,17 +304,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				945DFDE52BAD67570085856C /* Component4.swift in Sources */,
+				945DFDEB2BAE162E0085856C /* CentralComponents.swift in Sources */,
 				945486C82BAAE71C00B0FF64 /* ForecastProtocol.swift in Sources */,
 				945486D22BAAE7F300B0FF64 /* SearchVC.swift in Sources */,
+				945DFDE92BAE15F60085856C /* BadgeItemComponent4.swift in Sources */,
 				945486D02BAAE7EA00B0FF64 /* MainVC.swift in Sources */,
 				945486C12BAAE19C00B0FF64 /* TodoList.swift in Sources */,
+				945DFDE72BAE15A80085856C /* HeadComponents.swift in Sources */,
 				945DFDDF2BAC9CE10085856C /* LocationModel.swift in Sources */,
 				945486D42BAAE7FF00B0FF64 /* SettingsVC.swift in Sources */,
 				945486BF2BAA2AB500B0FF64 /* DailySummaryVC.swift in Sources */,
 				945486D62BAAE87100B0FF64 /* Interactor.swift in Sources */,
 				9454868E2BAA294C00B0FF64 /* AppDelegate.swift in Sources */,
 				945486CB2BAAE74F00B0FF64 /* OpenWeatherForecast.swift in Sources */,
+				945DFDF12BAF153E0085856C /* ChartComponent4.swift in Sources */,
 				945486C42BAAE6CD00B0FF64 /* ForecastModel.swift in Sources */,
+				945DFDED2BAE2CCE0085856C /* CalendarComponent4.swift in Sources */,
 				945486902BAA294C00B0FF64 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

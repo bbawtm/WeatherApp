@@ -68,7 +68,7 @@ class ForecastModel {
     
     public func momentumForecast(forCoordinate coordinate: CLLocationCoordinate2D) -> CurrentValueSubject<WeatherData?, Error> {
         let transformedCoordinate = appropriateScalingTransform(coordinate: coordinate)
-        let publisher = CurrentValueSubject<WeatherData?, Error>(nil)
+        let publisher = CurrentValueSubject<WeatherData?, Error>(nil)  // TODO: get value from cache
         
         let observationTimerKey = ObservationTimerKey(
             usageType: .momentum,
@@ -84,7 +84,7 @@ class ForecastModel {
         observationClosure()
         
         observationTimers[observationTimerKey] = Timer.scheduledTimer(
-            withTimeInterval: 3600,
+            withTimeInterval: 0.25 * 3600,
             repeats: true,
             block: { _ in observationClosure() }
         )
@@ -94,22 +94,26 @@ class ForecastModel {
     
     public func longTermForecast(forCoordinate coordinate: CLLocationCoordinate2D) -> CurrentValueSubject<[WeatherData]?, Error> {
         let transformedCoordinate = appropriateScalingTransform(coordinate: coordinate)
-        let publisher = CurrentValueSubject<[WeatherData]?, Error>(nil)
+        let publisher = CurrentValueSubject<[WeatherData]?, Error>(nil)  // TODO: get value from cache
         
         let observationTimerKey = ObservationTimerKey(
-            usageType: .momentum,
+            usageType: .longTerm,
             coordinateLatitude: transformedCoordinate.latitude,
             coordinateLongitude: transformedCoordinate.longitude
         )
         
+        let observationClosure = { [weak self, weak publisher] in
+            self?.forecastService?.longTermPrediction(coordinate: transformedCoordinate, completion: { [weak publisher] weatherData in
+                publisher?.send(weatherData)
+            })
+        }
+        
+        observationClosure()
+        
         observationTimers[observationTimerKey] = Timer.scheduledTimer(
-            withTimeInterval: 3600,
+            withTimeInterval: 0.5 * 3600,
             repeats: true,
-            block: { [weak self, weak publisher] _ in
-                self?.forecastService?.longTermPrediction(coordinate: transformedCoordinate, completion: { [weak publisher] weatherData in
-                    publisher?.send(weatherData)
-                })
-            }
+            block: { _ in observationClosure() }
         )
         
         return publisher
