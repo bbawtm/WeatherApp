@@ -23,8 +23,6 @@ class OpenWeatherForecast: ForecastProtocol {
     }
     
     func momentumPrediction(coordinate: CLLocationCoordinate2D, completion: @escaping (WeatherData?) -> Void) {
-        print("Request momentum")
-        
         let request = URLRequest(
             url: URL(string: "https://api.openweathermap.org/data/2.5/weather" +
                 "?lat=\(coordinate.latitude)" +
@@ -104,8 +102,6 @@ class OpenWeatherForecast: ForecastProtocol {
     }
     
     func longTermPrediction(coordinate: CLLocationCoordinate2D, completion: @escaping ([WeatherData]?) -> Void) {
-        print("Request long-term")
-        
         let request = URLRequest(
             url: URL(string: "https://api.openweathermap.org/data/2.5/forecast" +
                 "?lat=\(coordinate.latitude)" +

@@ -66,5 +66,40 @@ final class WeatherAppTests: XCTestCase {
             semaphore.wait()
         }
     }
+    
+    func testCacheStorage() {
+        let cacheStorage: CacheStorage<String, String> = Interactor.instance.getService(for: CacheStorage.self)
+        
+        XCTAssertNil(cacheStorage.object(forKey: "a"))
+        XCTAssertNil(cacheStorage.object(forKey: "b"))
+        
+        cacheStorage.setObject("aaa", forKey: "a")
+        XCTAssertEqual(cacheStorage.object(forKey: "a"), "aaa")
+        XCTAssertNil(cacheStorage.object(forKey: "b"))
+        XCTAssertEqual(cacheStorage.object(forKey: "a"), "aaa")
+        
+        cacheStorage.setObject("bbb", forKey: "b")
+        XCTAssertEqual(cacheStorage.object(forKey: "a"), "aaa")
+        XCTAssertEqual(cacheStorage.object(forKey: "b"), "bbb")
+        XCTAssertEqual(cacheStorage.object(forKey: "b"), "bbb")
+        XCTAssertEqual(cacheStorage.object(forKey: "a"), "aaa")
+        
+        cacheStorage.removeObject(forKey: "a")
+        XCTAssertEqual(cacheStorage.object(forKey: "b"), "bbb")
+        XCTAssertNil(cacheStorage.object(forKey: "a"))
+        
+        cacheStorage.setObject("bbb2", forKey: "b")
+        XCTAssertEqual(cacheStorage.object(forKey: "b"), "bbb2")
+        XCTAssertNil(cacheStorage.object(forKey: "a"))
+        
+        cacheStorage.setObject("aaa2", forKey: "a")
+        XCTAssertEqual(cacheStorage.object(forKey: "a"), "aaa2")
+        XCTAssertEqual(cacheStorage.object(forKey: "b"), "bbb2")
+        
+        cacheStorage.removeObject(forKey: "a")
+        cacheStorage.removeObject(forKey: "b")
+        XCTAssertNil(cacheStorage.object(forKey: "a"))
+        XCTAssertNil(cacheStorage.object(forKey: "b"))
+    }
 
 }

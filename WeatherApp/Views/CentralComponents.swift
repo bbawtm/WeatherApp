@@ -56,15 +56,15 @@ class CentralImageComponent4: Component4 {
                 
             case .drizzle:
                 self.view.image = UIImage(named: "rain")
-                self.view.contentMode = .scaleAspectFill
+//                self.view.contentMode = .scaleAspectFill
                 
             case .rain:
                 self.view.image = UIImage(named: "rain")
-                self.view.contentMode = .scaleAspectFill
+//                self.view.contentMode = .scaleAspectFill
                 
             case .snow:
                 self.view.image = UIImage(named: "rain")
-                self.view.contentMode = .scaleAspectFill
+//                self.view.contentMode = .scaleAspectFill
                 
             case .atmosphere:
                 self.view.image = UIImage(named: "atmosphere")

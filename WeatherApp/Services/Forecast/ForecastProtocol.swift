@@ -10,7 +10,7 @@ import CoreLocation
 
 
 struct WeatherData {
-    struct Main {
+    struct Main: Codable {
         let temperature: Double
         let feelsLike: Double
         let pressure: Int
@@ -23,7 +23,7 @@ struct WeatherData {
 
     struct Weather {
         
-        enum Code {
+        enum Code: Codable {
             case thunderstorm
             case drizzle
             case rain
@@ -73,7 +73,7 @@ struct WeatherData {
         let wind: Wind?
     }
 
-    struct Wind {
+    struct Wind: Codable {
         let speed: Double
         let degrees: Int
         let gust: Double?
@@ -107,4 +107,72 @@ protocol ForecastProtocol: Service, AnyObject {
         completion: @escaping ([WeatherData]?) -> Void
     )
     
+}
+
+
+extension WeatherData: Codable {
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        timestamp = try container.decode(TimeInterval.self, forKey: .timestamp)
+        timezone = try container.decode(Int.self, forKey: .timezone)
+        coordinate = try container.decode(CLLocationCoordinate2D.self, forKey: .coordinate)
+        main = try container.decode(Main.self, forKey: .main)
+        weather = try container.decode(Weather.self, forKey: .weather)
+        sunrise = try container.decodeIfPresent(Int.self, forKey: .sunrise)
+        sunset = try container.decodeIfPresent(Int.self, forKey: .sunset)
+        
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(timestamp, forKey: .timestamp)
+        try container.encode(timezone, forKey: .timezone)
+        try container.encode(coordinate, forKey: .coordinate)
+        try container.encode(main, forKey: .main)
+        try container.encode(weather, forKey: .weather)
+        try container.encodeIfPresent(sunrise, forKey: .sunrise)
+        try container.encodeIfPresent(sunset, forKey: .sunset)
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case timestamp
+        case timezone
+        case coordinate
+        case main
+        case weather
+        case sunrise
+        case sunset
+    }
+}
+
+extension WeatherData.Weather: Codable {
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        code = try container.decode(Code.self, forKey: .code)
+        title = try container.decode(String.self, forKey: .title)
+        description = try container.decode(String.self, forKey: .description)
+        cloudsVolume = try container.decodeIfPresent(Int.self, forKey: .cloudsVolume)
+        visibility = try container.decodeIfPresent(Int.self, forKey: .visibility)
+        rain = try container.decodeIfPresent(Double.self, forKey: .rain)
+        rainProbability = try container.decodeIfPresent(Double.self, forKey: .rainProbability)
+        snow = try container.decodeIfPresent(Double.self, forKey: .snow)
+        wind = try container.decodeIfPresent(WeatherData.Wind.self, forKey: .wind)
+    }
+        
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(code, forKey: .code)
+        try container.encode(title, forKey: .title)
+        try container.encode(description, forKey: .description)
+        try container.encodeIfPresent(cloudsVolume, forKey: .cloudsVolume)
+        try container.encodeIfPresent(visibility, forKey: .visibility)
+        try container.encodeIfPresent(rain, forKey: .rain)
+        try container.encodeIfPresent(rainProbability, forKey: .rainProbability)
+        try container.encodeIfPresent(snow, forKey: .snow)
+        try container.encodeIfPresent(wind, forKey: .wind)
+    }
+    
+    private enum CodingKeys: String, CodingKey {
+        case code, title, description, cloudsVolume, visibility, rain, rainProbability, snow, wind
+    }
 }

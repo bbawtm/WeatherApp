@@ -2,7 +2,7 @@
 //  TemperatureChartComponent4.swift
 //  WeatherApp
 //
-//  Created by Вадим Попов on 23.03.2024.
+//  Created by Vadim Popov on 23.03.2024.
 //
 
 import UIKit

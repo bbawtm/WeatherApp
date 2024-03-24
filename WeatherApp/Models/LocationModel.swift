@@ -2,7 +2,7 @@
 //  LocationModel.swift
 //  WeatherApp
 //
-//  Created by Вадим Попов on 21.03.2024.
+//  Created by Vadim Popov on 21.03.2024.
 //
 
 import Foundation
