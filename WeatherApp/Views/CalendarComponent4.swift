@@ -19,6 +19,9 @@ private class CalendarTableViewCell: UITableViewCell {
         return label
     }()
     
+    let rightImageComponentDayPublisher = CurrentValueSubject<WeatherData?, Error>(nil)
+    let rightImageComponentNightPublisher = CurrentValueSubject<WeatherData?, Error>(nil)
+    
     let rightImageComponentDay: CentralImageComponent4
     let rightImageComponentNight: CentralImageComponent4
     
@@ -30,20 +33,11 @@ private class CalendarTableViewCell: UITableViewCell {
         return label
     }()
     
-    init(model: [WeatherData]?) {
-        rightImageComponentDay = CentralImageComponent4(
-            listen: CurrentValueSubject<WeatherData?, Error>(
-                model?[Int((model?.count ?? 0) * 1 / 4)]
-            ).eraseToAnyPublisher()
-        )
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        rightImageComponentDay = CentralImageComponent4(listen: rightImageComponentDayPublisher.eraseToAnyPublisher())
+        rightImageComponentNight = CentralImageComponent4(listen: rightImageComponentNightPublisher.eraseToAnyPublisher())
         
-        rightImageComponentNight = CentralImageComponent4(
-            listen: CurrentValueSubject<WeatherData?, Error>(
-                model?[Int((model?.count ?? 0) * 3 / 4)]
-            ).eraseToAnyPublisher()
-        )
-        
-        super.init(style: .default, reuseIdentifier: "calendarTableViewCell")
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         contentView.addSubview(leftLabel)
         contentView.addSubview(rightImageComponentDay.view)
@@ -55,13 +49,15 @@ private class CalendarTableViewCell: UITableViewCell {
             leftLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             
             rightImageComponentDay.view.leadingAnchor.constraint(greaterThanOrEqualTo: leftLabel.trailingAnchor, constant: 8),
-            rightImageComponentDay.view.widthAnchor.constraint(equalToConstant: 35),
-            rightImageComponentDay.view.heightAnchor.constraint(equalToConstant: 35),
+            rightImageComponentDay.view.widthAnchor.constraint(equalToConstant: 30),
+            rightImageComponentDay.view.heightAnchor.constraint(equalToConstant: 22),
+            rightImageComponentDay.view.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             
-            rightImageComponentNight.view.leadingAnchor.constraint(equalTo: rightImageComponentDay.view.trailingAnchor, constant: 8),
-            rightImageComponentNight.view.trailingAnchor.constraint(equalTo: rightLabel.leadingAnchor, constant: -8),
-            rightImageComponentNight.view.widthAnchor.constraint(equalToConstant: 35),
-            rightImageComponentNight.view.heightAnchor.constraint(equalToConstant: 35),
+            rightImageComponentNight.view.leadingAnchor.constraint(equalTo: rightImageComponentDay.view.trailingAnchor, constant: 12),
+            rightImageComponentNight.view.trailingAnchor.constraint(equalTo: rightLabel.leadingAnchor, constant: -12),
+            rightImageComponentNight.view.widthAnchor.constraint(equalToConstant: 30),
+            rightImageComponentNight.view.heightAnchor.constraint(equalToConstant: 22),
+            rightImageComponentNight.view.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             
             rightLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             rightLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
@@ -73,14 +69,20 @@ private class CalendarTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    public func setModel(_ model: [WeatherData]?) {
+        // TODO: check this models
+        rightImageComponentDayPublisher.send(model?[Int((model?.count ?? 0) * 1 / 4)])
+        rightImageComponentNightPublisher.send(model?[Int((model?.count ?? 0) * 3 / 4)])
+    }
+    
 }
 
 
 private class CalendarTable: NSObject, UITableViewDelegate, UITableViewDataSource {
     
-    let days: [Date]
-    var lastFetchedModel: [WeatherData]?
-    var subscriber: AnyCancellable?
+    private let days: [Date]
+    private var lastFetchedModel: [WeatherData]?
+    private var subscriber: AnyCancellable?
     
     init(listen modelPublisher: CurrentValueSubject<[WeatherData]?, Error>, reloadDataClosure: @escaping () -> Void) {
         let currentDayDate = Self.dayDate(date: .now)
@@ -136,7 +138,8 @@ private class CalendarTable: NSObject, UITableViewDelegate, UITableViewDataSourc
         
         // Cell
         
-        let cell = CalendarTableViewCell(model: lastFetchedModel)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "calendarTableViewCell", for: indexPath) as! CalendarTableViewCell
+        cell.setModel(dayRecords)
         cell.leftLabel.text = dateText
         cell.rightLabel.text = degreesText
         cell.backgroundColor = UIColor(red: 0.042, green: 0.047, blue: 0.119, alpha: 1)
@@ -150,7 +153,7 @@ private class CalendarTable: NSObject, UITableViewDelegate, UITableViewDataSourc
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 40
+        return 50
     }
     
     private static func dayDate(date: Date) -> Date {
@@ -189,6 +192,7 @@ class CalendarComponent4: Component4 {
         
         tableView.delegate = tableDelegate
         tableView.dataSource = tableDelegate
+        tableView.register(CalendarTableViewCell.self, forCellReuseIdentifier: "calendarTableViewCell")
         
         view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -197,14 +201,14 @@ class CalendarComponent4: Component4 {
         
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: view.topAnchor),
-            titleLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
-            titleLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
+            titleLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 18),
+            titleLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -18),
             
             tableView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 14),
-            tableView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
-            tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
+            tableView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 18),
+            tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -18),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -27),
-            tableView.heightAnchor.constraint(equalToConstant: 5*40),
+            tableView.heightAnchor.constraint(equalToConstant: 5*50),
         ])
     }
     

@@ -23,13 +23,14 @@ class OpenWeatherForecast: ForecastProtocol {
     }
     
     func momentumPrediction(coordinate: CLLocationCoordinate2D, completion: @escaping (WeatherData?) -> Void) {
+        print("Request momentum")
+        
         let request = URLRequest(
             url: URL(string: "https://api.openweathermap.org/data/2.5/weather" +
                 "?lat=\(coordinate.latitude)" +
                 "&lon=\(coordinate.longitude)" +
                 "&appid=\(token)"
-            )!,
-            timeoutInterval: 1
+            )!
         )
         
         let task = session.dataTask(with: request) { data, response, error in
@@ -53,7 +54,7 @@ class OpenWeatherForecast: ForecastProtocol {
                 let windData = parsedDict["wind"] as? [String: Any]
                 
                 let result = WeatherData(
-                    timestamp: parsedDict["dt"] as! Int,
+                    timestamp: TimeInterval(parsedDict["dt"] as! Int),
                     timezone: parsedDict["timezone"] as! Int,
                     
                     coordinate: CLLocationCoordinate2D(
@@ -103,13 +104,14 @@ class OpenWeatherForecast: ForecastProtocol {
     }
     
     func longTermPrediction(coordinate: CLLocationCoordinate2D, completion: @escaping ([WeatherData]?) -> Void) {
+        print("Request long-term")
+        
         let request = URLRequest(
             url: URL(string: "https://api.openweathermap.org/data/2.5/forecast" +
                 "?lat=\(coordinate.latitude)" +
                 "&lon=\(coordinate.longitude)" +
                 "&appid=\(token)"
-            )!,
-            timeoutInterval: 1
+            )!
         )
         
         let task = session.dataTask(with: request) { data, response, error in
@@ -137,7 +139,7 @@ class OpenWeatherForecast: ForecastProtocol {
                     let windData = listItemData["wind"] as? [String: Any]
                     
                     let resultItem = WeatherData(
-                        timestamp: listItemData["dt"] as! Int,
+                        timestamp: TimeInterval(listItemData["dt"] as! Int),
                         timezone: cityData["timezone"] as! Int,
                         
                         coordinate: CLLocationCoordinate2D(

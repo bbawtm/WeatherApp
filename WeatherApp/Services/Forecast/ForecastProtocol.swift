@@ -79,7 +79,7 @@ struct WeatherData {
         let gust: Double?
     }
 
-    let timestamp: Int
+    let timestamp: TimeInterval
     let timezone: Int
     let coordinate: CLLocationCoordinate2D
     

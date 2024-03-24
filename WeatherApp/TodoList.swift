@@ -7,4 +7,8 @@
 
 // TODO: Add schema of application
 
-// TODO: On change location don't change place if its weather is not ready
+// TODO: Set constraint relative to right view border in Week Forecast
+
+// TODO: Request may fail (make refresh icon)
+
+// TODO: Use timezone

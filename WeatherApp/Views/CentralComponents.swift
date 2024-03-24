@@ -43,38 +43,38 @@ class CentralImageComponent4: Component4 {
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
             
+            self.view.contentMode = .scaleAspectFit
+            
             guard let weatherData = model else {
-                self.view.image = UIImage(named: "cloud.sun")
-                self.view.contentMode = .scaleAspectFill
+                self.view.image = UIImage(named: "cloud.sunny")
                 return
             }
             
             switch weatherData.weather.code {
             case .thunderstorm:
                 self.view.image = UIImage(named: "thunder")
-                self.view.contentMode = .scaleAspectFit
                 
             case .drizzle:
                 self.view.image = UIImage(named: "rain")
-                self.view.contentMode = .scaleAspectFit
+                self.view.contentMode = .scaleAspectFill
                 
             case .rain:
                 self.view.image = UIImage(named: "rain")
-                self.view.contentMode = .scaleAspectFit
+                self.view.contentMode = .scaleAspectFill
                 
             case .snow:
                 self.view.image = UIImage(named: "rain")
-                self.view.contentMode = .scaleAspectFit
+                self.view.contentMode = .scaleAspectFill
                 
             case .atmosphere:
                 self.view.image = UIImage(named: "atmosphere")
+                self.view.contentMode = .scaleAspectFill
                 
             case .clear:
                 self.view.image = UIImage(named: "sun")
-                self.view.contentMode = .scaleAspectFit
                 
             case .clouds:
-                self.view.image = UIImage(named: "cloud.sunny")
+                self.view.image = UIImage(named: "cloud")
             }
         }
     }

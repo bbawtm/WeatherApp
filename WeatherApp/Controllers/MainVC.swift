@@ -149,6 +149,10 @@ class MainVC: UIViewController {
         return container
     }()
     
+    // MARK: Hourly forecast
+    
+    private lazy var chartComponent = ChartComponent4(listen: updateViewLongTermPublisher)
+    
     // MARK: Calendar
     
     private lazy var calendarComponent = CalendarComponent4(listen: updateViewLongTermPublisher)
@@ -192,31 +196,33 @@ class MainVC: UIViewController {
             
             // Badges container
             
-            badgeHumidityComponent4.view.leftAnchor.constraint(equalTo: badgesContainer.leftAnchor, constant: 30),
+            badgeHumidityComponent4.view.leftAnchor.constraint(equalTo: badgesContainer.leftAnchor, constant: 18),
             badgeHumidityComponent4.view.topAnchor.constraint(equalTo: badgesContainer.topAnchor),
-            badgeHumidityComponent4.view.widthAnchor.constraint(lessThanOrEqualTo: badgesContainer.widthAnchor, multiplier: 0.5, constant: -30*1.5),
+            badgeHumidityComponent4.view.widthAnchor.constraint(equalTo: badgesContainer.widthAnchor, multiplier: 0.5, constant: -18-12.5),
             
-            badgeWindComponent4.view.leftAnchor.constraint(equalTo: badgeHumidityComponent4.view.rightAnchor, constant: 30),
-            badgeWindComponent4.view.rightAnchor.constraint(equalTo: badgesContainer.rightAnchor, constant: -30),
+            badgeWindComponent4.view.rightAnchor.constraint(equalTo: badgesContainer.rightAnchor, constant: -18),
             badgeWindComponent4.view.topAnchor.constraint(equalTo: badgesContainer.topAnchor),
-            badgeWindComponent4.view.widthAnchor.constraint(lessThanOrEqualTo: badgesContainer.widthAnchor, multiplier: 0.5, constant: -30*1.5),
+            badgeWindComponent4.view.widthAnchor.constraint(equalTo: badgesContainer.widthAnchor, multiplier: 0.5, constant: -18-12.5),
             
-            badgeSunriseComponent4.view.leftAnchor.constraint(equalTo: badgesContainer.leftAnchor, constant: 30),
-            badgeSunriseComponent4.view.topAnchor.constraint(equalTo: badgeHumidityComponent4.view.bottomAnchor, constant: 30),
+            badgeSunriseComponent4.view.leftAnchor.constraint(equalTo: badgesContainer.leftAnchor, constant: 18),
+            badgeSunriseComponent4.view.topAnchor.constraint(equalTo: badgeHumidityComponent4.view.bottomAnchor, constant: 25),
             badgeSunriseComponent4.view.bottomAnchor.constraint(equalTo: badgesContainer.bottomAnchor),
-            badgeSunriseComponent4.view.widthAnchor.constraint(lessThanOrEqualTo: badgesContainer.widthAnchor, multiplier: 0.5, constant: -30*1.5),
+            badgeSunriseComponent4.view.widthAnchor.constraint(equalTo: badgesContainer.widthAnchor, multiplier: 0.5, constant: -18-12.5),
             
-            badgeSunsetComponent4.view.leftAnchor.constraint(equalTo: badgeSunriseComponent4.view.rightAnchor, constant: 30),
-            badgeSunsetComponent4.view.rightAnchor.constraint(equalTo: badgesContainer.rightAnchor, constant: -30),
-            badgeSunsetComponent4.view.topAnchor.constraint(equalTo: badgeWindComponent4.view.bottomAnchor, constant: 30),
+            badgeSunsetComponent4.view.rightAnchor.constraint(equalTo: badgesContainer.rightAnchor, constant: -18),
+            badgeSunsetComponent4.view.topAnchor.constraint(equalTo: badgeWindComponent4.view.bottomAnchor, constant: 25),
             badgeSunsetComponent4.view.bottomAnchor.constraint(equalTo: badgesContainer.bottomAnchor),
-            badgeSunsetComponent4.view.widthAnchor.constraint(lessThanOrEqualTo: badgesContainer.widthAnchor, multiplier: 0.5, constant: -30*1.5),
+            badgeSunsetComponent4.view.widthAnchor.constraint(equalTo: badgesContainer.widthAnchor, multiplier: 0.5, constant: -18-12.5),
             
             badgesContainer.topAnchor.constraint(equalTo: centralContainer.bottomAnchor, constant: 50),
             badgesContainer.leftAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leftAnchor),
             badgesContainer.rightAnchor.constraint(equalTo: scrollView.contentLayoutGuide.rightAnchor),
             
-            calendarComponent.view.topAnchor.constraint(equalTo: badgesContainer.bottomAnchor, constant: 50),
+            chartComponent.view.topAnchor.constraint(equalTo: badgesContainer.bottomAnchor, constant: 25),
+            chartComponent.view.leftAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leftAnchor, constant: 18),
+            chartComponent.view.rightAnchor.constraint(equalTo: scrollView.contentLayoutGuide.rightAnchor, constant: -18),
+            
+            calendarComponent.view.topAnchor.constraint(equalTo: chartComponent.view.bottomAnchor, constant: 50),
             calendarComponent.view.leftAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leftAnchor),
             calendarComponent.view.rightAnchor.constraint(equalTo: scrollView.contentLayoutGuide.rightAnchor),
             calendarComponent.view.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
@@ -241,7 +247,6 @@ class MainVC: UIViewController {
                     self?.updateViewMomentumPublisher.send(weatherData)
                 }
             }
-            updationClosure(forecastPublisher?.value)
             
             return forecastPublisher?.sink(
                 receiveCompletion: { _ in },
@@ -257,7 +262,6 @@ class MainVC: UIViewController {
                     self?.updateViewLongTermPublisher.send(weatherData)
                 }
             }
-            updationClosure(forecastPublisher?.value)
             
             return forecastPublisher?.sink(
                 receiveCompletion: { _ in },
@@ -272,6 +276,7 @@ class MainVC: UIViewController {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(centralContainer)
         scrollView.addSubview(badgesContainer)
+        scrollView.addSubview(chartComponent.view)
         scrollView.addSubview(calendarComponent.view)
         
         view.addSubview(headContainer)
