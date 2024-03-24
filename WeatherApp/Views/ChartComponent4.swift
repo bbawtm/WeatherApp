@@ -77,6 +77,7 @@ private class ChartCollection: NSObject, UICollectionViewDelegate, UICollectionV
         subscriber = modelPublisher.sink(
             receiveCompletion: { _ in },
             receiveValue: { [weak self] weatherDataList in
+                print(weatherDataList?.count)
                 self?.lastFetchedModel = weatherDataList ?? []
                 reloadDataClosure()
             }
@@ -88,7 +89,7 @@ private class ChartCollection: NSObject, UICollectionViewDelegate, UICollectionV
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 7
+        return 8
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
@@ -152,13 +153,14 @@ private class ChartView: UIView {
         
         let minValue = model.min() ?? 0
         let maxValue = model.max() ?? 1
+        let rectHeight = Int(rect.height)
         
-        let points = model.enumerated().map { index, value in
-            let height = abs((value - minValue) * (Int(rect.height) - lineWidth) / (maxValue - minValue))
+        var points = model.enumerated().map { index, value in
+            let height = abs((value - minValue) * (rectHeight - 2 * lineWidth) / (maxValue - minValue))
             
             return CGPoint(
                 x: index * barWidth + barWidth / 2,
-                y: Int(rect.height) - lineWidth - height
+                y: rectHeight - lineWidth - height
             )
         }
         
@@ -168,9 +170,10 @@ private class ChartView: UIView {
         context.setStrokeColor(UIColor(red: 0.09375, green: 0.625, blue: 0.98046875, alpha: 1).cgColor)
         
         var previousPoint = points[0]
-        context.move(to: CGPoint(x: previousPoint.x, y: previousPoint.y))
+        context.move(to: CGPoint(x: CGFloat(barWidth / 4), y: previousPoint.y))
+        points.append(CGPoint(x: points[points.count - 1].x + CGFloat(barWidth / 4), y: points[points.count - 1].y))
         
-        for point in points.dropFirst() {
+        for point in points {
             let currentPoint = CGPoint(x: point.x, y: point.y)
             let controlPoint1 = CGPoint(x: (previousPoint.x + currentPoint.x) / 2, y: previousPoint.y)
             let controlPoint2 = CGPoint(x: (previousPoint.x + currentPoint.x) / 2, y: currentPoint.y)
@@ -209,9 +212,8 @@ class ChartComponent4: Component4 {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = badgeGrayColor
 
-        let currentDayDate = Self.currentDayDate()
         let dayModelPublisher = modelPublisher.map({ (weatherDataList: [WeatherData]?) in
-            return weatherDataList?.filter { weatherData in weatherData.timestamp <= currentDayDate.timeIntervalSince1970 + 24 * 3600 }
+            return weatherDataList?.filter { weatherData in weatherData.timestamp <= Date.now.timeIntervalSince1970 + 24 * 3600 }
         }).eraseToAnyPublisher()
         
         collectionDelegate = ChartCollection(listen: dayModelPublisher) { [weak collectionView] in
@@ -249,7 +251,7 @@ class ChartComponent4: Component4 {
             collectionView.leftAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leftAnchor),
             collectionView.rightAnchor.constraint(equalTo: scrollView.contentLayoutGuide.rightAnchor),
             collectionView.heightAnchor.constraint(equalToConstant: 100),
-            collectionView.widthAnchor.constraint(equalToConstant: 54*7),
+            collectionView.widthAnchor.constraint(equalToConstant: 54*8),
             
             chartView.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 20),
             chartView.leftAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leftAnchor),
@@ -286,7 +288,7 @@ class ChartComponent4: Component4 {
     
     private static func dayDate(_ date: Date) -> Date {
         let calendar = Calendar.current
-        let components = calendar.dateComponents([.year, .month, .day], from: date)
+        let components = calendar.dateComponents([.year, .month, .day, .timeZone], from: date)
         return calendar.date(from: components)!
     }
     
