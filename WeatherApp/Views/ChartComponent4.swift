@@ -117,7 +117,9 @@ private class ChartCollection: NSObject, UICollectionViewDelegate, UICollectionV
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "en_US")
         dateFormatter.dateFormat = "HH:mm"
-        let timeText = dateFormatter.string(from: modelItem.date)
+        let timeText = dateFormatter.string(
+            from: modelItem.date.addingTimeInterval(TimeInterval(modelItem.timezone - TimeZone.current.secondsFromGMT()))
+        )
         
         // Degrees
         let degreesText = "\(Int(modelItem.main.temperature.rounded()))°"

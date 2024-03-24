@@ -70,9 +70,23 @@ private class CalendarTableViewCell: UITableViewCell {
     }
     
     public func setModel(_ model: [WeatherData]?) {
-        // TODO: check this models
-        rightImageComponentDayPublisher.send(model?[Int((model?.count ?? 0) * 1 / 4)])
-        rightImageComponentNightPublisher.send(model?[Int((model?.count ?? 0) * 3 / 4)])
+        let dayData: WeatherData?
+        let nightData: WeatherData?
+        
+        let dayIndex = Int((model?.count ?? 0) * 1 / 4)
+        let nightIndex = Int((model?.count ?? 0) * 3 / 4)
+        
+        if let model, dayIndex < model.count && nightIndex < model.count {
+            dayData = model[dayIndex]
+            nightData = model[nightIndex]
+            
+        } else {
+            dayData = nil
+            nightData = nil
+        }
+        
+        rightImageComponentDayPublisher.send(dayData)
+        rightImageComponentNightPublisher.send(nightData)
     }
     
 }
