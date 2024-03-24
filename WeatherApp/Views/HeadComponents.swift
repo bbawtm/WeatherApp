@@ -84,3 +84,58 @@ class HeadLocationDescriptionComponent4: Component4 {
         return completeText
     }
 }
+
+class HeadRefreshDescriptionComponent4: Component4 {
+    typealias Model = Int
+    typealias ConcreteView = UIImageView
+    
+    var model: Model = 0
+    var view: ConcreteView
+    private var modelSubscription: AnyCancellable?
+    private let lock = DispatchSemaphore(value: 1)
+    
+    init(listen modelPublisher: AnyPublisher<Model, Error>?) {
+        let image = UIImage(named: "arrow.clockwise")?.withTintColor(.white, renderingMode: .alwaysOriginal)
+        let imageView = UIImageView(image: image)
+        imageView.contentMode = .scaleAspectFit
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.isHidden = true
+        
+        view = imageView
+        
+        modelSubscription = modelPublisher?.sink(
+            receiveCompletion: { _ in },
+            receiveValue: { [weak self] value in
+                self?.requestUpdates(withModel: value)
+            }
+        )
+    }
+    
+    private func rotateArrow(_ position: Int = 1) {
+        UIView.animate(withDuration: 0.5, delay: 0, options: .curveLinear) { [weak self] in
+            self?.view.transform = CGAffineTransform(rotationAngle: CGFloat(position) * .pi)
+            
+        } completion: { [weak self] _ in
+            if !(self?.view.isHidden ?? true) {
+                self?.rotateArrow((position + 1) % 2)
+            }
+        }
+    }
+    
+    func requestUpdates(withModel delta: Model) {
+        lock.wait()
+        model += delta
+        let needsAnimation = model == 1 && delta == 1
+        self.lock.signal()
+        
+        DispatchQueue.main.async { [weak self] in
+            if let self {
+                self.view.isHidden = self.model <= 0
+                
+                if needsAnimation {
+                    self.rotateArrow()
+                }
+            }
+        }
+    }
+}

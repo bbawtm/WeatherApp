@@ -77,7 +77,6 @@ private class ChartCollection: NSObject, UICollectionViewDelegate, UICollectionV
         subscriber = modelPublisher.sink(
             receiveCompletion: { _ in },
             receiveValue: { [weak self] weatherDataList in
-                print(weatherDataList?.count)
                 self?.lastFetchedModel = weatherDataList ?? []
                 reloadDataClosure()
             }

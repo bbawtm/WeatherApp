@@ -117,6 +117,7 @@ class ForecastModel {
     
     public static let instance = ForecastModel()
     
+    private let networkUsagePublisher = PassthroughSubject<Int, Error>()
     private var observationTimers: [ObservationTimerKey: Timer] = [:]
     private weak var forecastService: ForecastProtocol? = Interactor.instance.getService(for: OpenWeatherForecast.self)
     private weak var cacheStorage: CacheStorage<CacheKey, CacheValue>? = Interactor.instance.getService(for: CacheStorage.self)
@@ -135,9 +136,11 @@ class ForecastModel {
             coordinateLongitude: transformedCoordinate.longitude
         )
         let observationClosure = { [weak self, weak publisher] in
+            self?.networkUsagePublisher.send(1)
             self?.forecastService?.momentumPrediction(coordinate: transformedCoordinate, completion: { [weak self, weak publisher] weatherData in
                 self?.setCacheValue(weatherData, forUsageType: .momentum, coordinate: transformedCoordinate)
                 publisher?.send(weatherData)
+                self?.networkUsagePublisher.send(-1)
             })
         }
         
@@ -163,9 +166,11 @@ class ForecastModel {
         )
         
         let observationClosure = { [weak self, weak publisher] in
+            self?.networkUsagePublisher.send(1)
             self?.forecastService?.longTermPrediction(coordinate: transformedCoordinate, completion: { [weak self, weak publisher] weatherData in
                 self?.setCacheValue(weatherData, forUsageType: .longTerm, coordinate: transformedCoordinate)
                 publisher?.send(weatherData)
+                self?.networkUsagePublisher.send(-1)
             })
         }
         
@@ -182,6 +187,10 @@ class ForecastModel {
     
     public func removeTimer(forKey key: ObservationTimerKey) {  // TODO: use this
         observationTimers.removeValue(forKey: key)
+    }
+    
+    public func networkUsage() -> AnyPublisher<Int, Error> {
+        return networkUsagePublisher.eraseToAnyPublisher()
     }
     
     private func cacheValue<T>(forUsageType usageType: UsageType, coordinate: CLLocationCoordinate2D) -> Optional<T> {

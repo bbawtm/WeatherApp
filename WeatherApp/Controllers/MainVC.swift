@@ -43,6 +43,7 @@ class MainVC: UIViewController {
     
     // MARK: Head Container
     
+    private lazy var headRefreshDescriptionComponent4 = HeadRefreshDescriptionComponent4(listen: forecastModel?.networkUsage())
     private let headDayDescriptionComponent4 = HeadDayDescriptionComponent4()
     private let headLocationDescriptionComponent4 = HeadLocationDescriptionComponent4()
     
@@ -51,6 +52,7 @@ class MainVC: UIViewController {
         container.translatesAutoresizingMaskIntoConstraints = false
         container.addSubview(headDayDescriptionComponent4.view)
         container.addSubview(headLocationDescriptionComponent4.view)
+        container.addSubview(headRefreshDescriptionComponent4.view)
         return container
     }()
     
@@ -171,8 +173,14 @@ class MainVC: UIViewController {
             headLocationDescriptionComponent4.view.leftAnchor.constraint(equalTo: headContainer.leftAnchor),
             headLocationDescriptionComponent4.view.bottomAnchor.constraint(equalTo: headContainer.bottomAnchor),
             
+            headRefreshDescriptionComponent4.view.topAnchor.constraint(equalTo: headContainer.topAnchor),
+            headRefreshDescriptionComponent4.view.rightAnchor.constraint(equalTo: headContainer.rightAnchor, constant: 0),
+            headRefreshDescriptionComponent4.view.heightAnchor.constraint(equalToConstant: 20),
+            headRefreshDescriptionComponent4.view.widthAnchor.constraint(equalToConstant: 20),
+            
             headContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
             headContainer.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 20),
+            headContainer.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -20),
             
             // Central container
             
