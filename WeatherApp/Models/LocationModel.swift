@@ -14,6 +14,29 @@ class LocationModel: NSObject, CLLocationManagerDelegate {
     
     public static let instance = LocationModel()
     
+    public static func requestLocationRepresentation(_ location: CLLocation?, completion: @escaping (String) -> Void) {
+        let undefinedLocationText = "Undefined location"
+        
+        guard let location else {
+            completion(undefinedLocationText)
+            return
+        }
+        
+        let geocoder = CLGeocoder()
+        
+        geocoder.reverseGeocodeLocation(
+            location,
+            preferredLocale: Locale(identifier: "en_US")
+        ) { listPlacemark, error in
+            if let representation = listPlacemark?.first?.name {
+                completion(representation)
+                
+            } else {
+                completion(undefinedLocationText)
+            }
+        }
+    }
+    
     public let updationPublisher = CurrentValueSubject<CLLocationCoordinate2D?, Error>(nil)
     private let locationManager = CLLocationManager()
     
@@ -46,26 +69,7 @@ class LocationModel: NSObject, CLLocationManagerDelegate {
     }
     
     public func requestCurrentLocationRepresentation(completion: @escaping (String) -> Void) {
-        let undefinedLocationText = "Undefined location"
-        
-        guard let location = locationManager.location else {
-            completion(undefinedLocationText)
-            return
-        }
-        
-        let geocoder = CLGeocoder()
-        
-        geocoder.reverseGeocodeLocation(
-            location,
-            preferredLocale: Locale(identifier: "en_US")
-        ) { listPlacemark, error in
-            if let representation = listPlacemark?.first?.name {
-                completion(representation)
-                
-            } else {
-                completion(undefinedLocationText)
-            }
-        }
+        return Self.requestLocationRepresentation(locationManager.location, completion: completion)
     }
     
 }

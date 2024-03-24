@@ -13,7 +13,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     private func buildRootViewController() -> UIViewController {
         let tabBar = UITabBarController()
-        
+        tabBar.overrideUserInterfaceStyle = .dark
+
         tabBar.viewControllers = [
             MainVC().preparedForTabBar(),
             UINavigationController(rootViewController: SearchVC().preparedForTabBar()),
