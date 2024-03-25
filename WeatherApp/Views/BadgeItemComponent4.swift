@@ -59,7 +59,7 @@ class BadgeItemComponent4: Component4 {
         
         let badge = UIView()
         badge.translatesAutoresizingMaskIntoConstraints = false
-        badge.backgroundColor = UIColor(red: 0.2578125, green: 0.2578125, blue: 0.30859375, alpha: 1)
+        badge.backgroundColor = UIColor(red: 0.2578125, green: 0.2578125, blue: 0.30859375, alpha: 0.5)
         badge.layer.cornerRadius = 12
         badge.addSubview(content)
         

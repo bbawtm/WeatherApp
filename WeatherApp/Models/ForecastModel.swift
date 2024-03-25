@@ -127,21 +127,59 @@ class ForecastModel {
     
     // TODO: remove copypaste
     public func momentumForecast(forCoordinate coordinate: CLLocationCoordinate2D) -> CurrentValueSubject<WeatherData?, Error> {
+        return requestForecast(ofType: .momentum, forCoordinate: coordinate)
+    }
+    
+    public func longTermForecast(forCoordinate coordinate: CLLocationCoordinate2D) -> CurrentValueSubject<[WeatherData]?, Error> {
+        return requestForecast(ofType: .longTerm, forCoordinate: coordinate)
+    }
+    
+    public func removeTimer(forKey key: ObservationTimerKey) {  // TODO: use this
+        observationTimers.removeValue(forKey: key)
+    }
+    
+    public func networkUsage() -> AnyPublisher<Int, Error> {
+        return networkUsagePublisher.eraseToAnyPublisher()
+    }
+    
+    private func requestForecast<T>(
+        ofType usageType: UsageType,
+        forCoordinate coordinate: CLLocationCoordinate2D
+    ) -> CurrentValueSubject<T?, Error> {
+        
         let transformedCoordinate = appropriateScalingTransform(coordinate: coordinate)
-        let publisher = CurrentValueSubject<WeatherData?, Error>(cacheValue(forUsageType: .momentum, coordinate: transformedCoordinate))
+        let publisher = CurrentValueSubject<T?, Error>(cacheValue(forUsageType: usageType, coordinate: transformedCoordinate))
         
         let observationTimerKey = ObservationTimerKey(
             usageType: .momentum,
             coordinateLatitude: transformedCoordinate.latitude,
             coordinateLongitude: transformedCoordinate.longitude
         )
-        let observationClosure = { [weak self, weak publisher] in
-            self?.networkUsagePublisher.send(1)
-            self?.forecastService?.momentumPrediction(coordinate: transformedCoordinate, completion: { [weak self, weak publisher] weatherData in
-                self?.setCacheValue(weatherData, forUsageType: .momentum, coordinate: transformedCoordinate)
-                publisher?.send(weatherData)
-                self?.networkUsagePublisher.send(-1)
-            })
+        
+        let observationClosure: () -> ()
+        switch usageType {
+        case .momentum:
+            observationClosure = { [weak self, weak publisher] in
+                self?.networkUsagePublisher.send(1)
+                self?.forecastService?.momentumPrediction(coordinate: transformedCoordinate, completion: { [weak self, weak publisher] weatherData in
+                    self?.setCacheValue(weatherData, forUsageType: usageType, coordinate: transformedCoordinate)
+                    publisher?.send(weatherData as? T)
+                    self?.networkUsagePublisher.send(-1)
+                })
+            }
+        
+        case .longTerm:
+            observationClosure = { [weak self, weak publisher] in
+                self?.networkUsagePublisher.send(1)
+                self?.forecastService?.longTermPrediction(
+                    coordinate: transformedCoordinate,
+                    completion: { [weak self, weak publisher] weatherDataList in
+                        self?.setCacheValue(weatherDataList, forUsageType: usageType, coordinate: transformedCoordinate)
+                        publisher?.send(weatherDataList as? T)
+                        self?.networkUsagePublisher.send(-1)
+                    }
+                )
+            }
         }
         
         observationClosure()
@@ -153,44 +191,6 @@ class ForecastModel {
         )
         
         return publisher
-    }
-    
-    public func longTermForecast(forCoordinate coordinate: CLLocationCoordinate2D) -> CurrentValueSubject<[WeatherData]?, Error> {
-        let transformedCoordinate = appropriateScalingTransform(coordinate: coordinate)
-        let publisher = CurrentValueSubject<[WeatherData]?, Error>(cacheValue(forUsageType: .longTerm, coordinate: transformedCoordinate))
-        
-        let observationTimerKey = ObservationTimerKey(
-            usageType: .longTerm,
-            coordinateLatitude: transformedCoordinate.latitude,
-            coordinateLongitude: transformedCoordinate.longitude
-        )
-        
-        let observationClosure = { [weak self, weak publisher] in
-            self?.networkUsagePublisher.send(1)
-            self?.forecastService?.longTermPrediction(coordinate: transformedCoordinate, completion: { [weak self, weak publisher] weatherData in
-                self?.setCacheValue(weatherData, forUsageType: .longTerm, coordinate: transformedCoordinate)
-                publisher?.send(weatherData)
-                self?.networkUsagePublisher.send(-1)
-            })
-        }
-        
-        observationClosure()
-        
-        observationTimers[observationTimerKey] = Timer.scheduledTimer(
-            withTimeInterval: 0.5 * 3600,
-            repeats: true,
-            block: { _ in observationClosure() }
-        )
-        
-        return publisher
-    }
-    
-    public func removeTimer(forKey key: ObservationTimerKey) {  // TODO: use this
-        observationTimers.removeValue(forKey: key)
-    }
-    
-    public func networkUsage() -> AnyPublisher<Int, Error> {
-        return networkUsagePublisher.eraseToAnyPublisher()
     }
     
     private func cacheValue<T>(forUsageType usageType: UsageType, coordinate: CLLocationCoordinate2D) -> Optional<T> {

@@ -171,6 +171,14 @@ class SearchVC: UIViewController, UISearchBarDelegate, MKMapViewDelegate {
         }
     }
     
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+    }
+    
     private func mapLocateItem(coordinate: CLLocationCoordinate2D) {
         var region = MKCoordinateRegion()
         region.center = coordinate

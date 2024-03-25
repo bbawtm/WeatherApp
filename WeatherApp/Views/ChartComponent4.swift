@@ -200,7 +200,7 @@ class ChartComponent4: Component4 {
     private var modelSubscription: AnyCancellable? = nil
     
     init(listen modelPublisher: CurrentValueSubject<Model, Error>) {
-        let badgeGrayColor = UIColor(red: 0.2578125, green: 0.2578125, blue: 0.30859375, alpha: 1)
+        let badgeGrayColor = UIColor(red: 0.2578125, green: 0.2578125, blue: 0.30859375, alpha: 0.5)
         
         let titleLabel = UILabel()
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -211,7 +211,7 @@ class ChartComponent4: Component4 {
         let collectionViewLayout = UICollectionViewFlowLayout()
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.backgroundColor = badgeGrayColor
+        collectionView.backgroundColor = UIColor.clear
 
         let dayModelPublisher = modelPublisher.map({ (weatherDataList: [WeatherData]?) in
             return weatherDataList?.filter { weatherData in weatherData.timestamp <= Date.now.timeIntervalSince1970 + 24 * 3600 }
@@ -228,7 +228,7 @@ class ChartComponent4: Component4 {
         collectionView.register(ChartViewCell.self, forCellWithReuseIdentifier: "chartCollectionViewCell")
         
         chartView.translatesAutoresizingMaskIntoConstraints = false
-        chartView.backgroundColor = badgeGrayColor
+        chartView.backgroundColor = UIColor.clear
         
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
