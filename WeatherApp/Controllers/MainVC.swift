@@ -247,6 +247,8 @@ class MainVC: UIViewController {
     }
     
     private func updateContent(forCoordinate coordinate: CLLocationCoordinate2D) {
+        forecastModel?.stopForecastUpdations()
+        
         momentumForecastSubscriber = {
             let forecastPublisher = forecastModel?.momentumForecast(forCoordinate: coordinate)
             

@@ -125,7 +125,6 @@ class ForecastModel {
     private init() {
     }
     
-    // TODO: remove copypaste
     public func momentumForecast(forCoordinate coordinate: CLLocationCoordinate2D) -> CurrentValueSubject<WeatherData?, Error> {
         return requestForecast(ofType: .momentum, forCoordinate: coordinate)
     }
@@ -134,8 +133,11 @@ class ForecastModel {
         return requestForecast(ofType: .longTerm, forCoordinate: coordinate)
     }
     
-    public func removeTimer(forKey key: ObservationTimerKey) {  // TODO: use this
-        observationTimers.removeValue(forKey: key)
+    public func stopForecastUpdations() {
+        observationTimers.forEach { _, timer in
+            timer.invalidate()
+        }
+        observationTimers.removeAll()
     }
     
     public func networkUsage() -> AnyPublisher<Int, Error> {

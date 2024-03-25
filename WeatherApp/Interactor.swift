@@ -18,12 +18,8 @@ class Interactor {
     public static let instance = Interactor()
     
     private var dependencies: [String: Any] = [:]
-    private let globals: [String: Any?]  // TODO: Make lambda for fetching objects instead of `globals`
     
     private init() {
-        globals = [
-            "openWeatherToken": Bundle.main.object(forInfoDictionaryKey: "Open Weather token"),
-        ]
     }
     
     public func getService<T: Service>(for type: T.Type) -> T {
@@ -33,7 +29,7 @@ class Interactor {
             return ref
         }
         
-        let ref = type.init(globals)
+        let ref = type.init(Bundle.main.infoDictionary ?? [:])
         dependencies[key] = ref
         return ref
     }

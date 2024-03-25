@@ -74,7 +74,7 @@ class CentralImageComponent4: Component4 {
                 self.view.image = UIImage(named: "sun")
                 
             case .clouds:
-                self.view.image = UIImage(named: "cloud")  // TODO: prettify image
+                self.view.image = UIImage(named: "cloud")
             }
         }
     }

@@ -15,7 +15,7 @@ class OpenWeatherForecast: ForecastProtocol {
     private let session = URLSession(configuration: URLSessionConfiguration.default)
     
     required init(_ globals: [String : Any?]) {
-        guard let token = globals["openWeatherToken"] as? String else {
+        guard let token = globals["Open Weather token"] as? String else {
             fatalError("OpenWeatherForecast: token not found")
         }
         
