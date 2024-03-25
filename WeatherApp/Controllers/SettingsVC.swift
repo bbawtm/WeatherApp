@@ -30,6 +30,19 @@ class SettingsVC: UIViewController {
     
     override func viewDidLoad() {
         view.backgroundColor = UIColor(red: 0.042, green: 0.047, blue: 0.119, alpha: 1)
+        
+        let centerLabel = UILabel()
+        centerLabel.text = "Not implemented yet..."
+        centerLabel.font = UIFont(name: "Inter", size: 16)
+        centerLabel.textColor = .white
+        centerLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(centerLabel)
+        
+        NSLayoutConstraint.activate([
+            centerLabel.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+            centerLabel.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor),
+        ])
     }
     
 }
