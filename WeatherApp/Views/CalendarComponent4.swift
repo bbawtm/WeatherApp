@@ -197,6 +197,7 @@ class CalendarComponent4: Component4 {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.backgroundColor = UIColor(red: 0.042, green: 0.047, blue: 0.119, alpha: 1)
+        tableView.isScrollEnabled = false
         
         tableDelegate = CalendarTable(listen: modelPublisher) { [weak tableView] in
             DispatchQueue.main.async { [weak tableView] in

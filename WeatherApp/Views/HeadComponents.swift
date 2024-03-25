@@ -41,10 +41,12 @@ class HeadLocationDescriptionComponent4: Component4 {
     var model: Model = nil
     var view: ConcreteView
     
-    private weak var locationModel = LocationModel.instance
+    private weak var locationModel: LocationModelProtocol?
     private var modelSubscribtion: AnyCancellable?
     
-    init() {
+    init(locationModel: LocationModelProtocol) {
+        self.locationModel = locationModel
+        
         let lbl = UILabel()
         
         lbl.textAlignment = .center
@@ -55,7 +57,7 @@ class HeadLocationDescriptionComponent4: Component4 {
         
         view = lbl
         
-        modelSubscribtion = locationModel?.updationPublisher.sink(
+        modelSubscribtion = locationModel.updationPublisher.sink(
             receiveCompletion: { _ in },
             receiveValue: { [weak self] _ in
                 self?.requestUpdates(withModel: nil)

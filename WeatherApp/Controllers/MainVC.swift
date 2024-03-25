@@ -13,7 +13,7 @@ import Combine
 class MainVC: UIViewController {
     
     private weak var forecastModel = ForecastModel.instance
-    private weak var locationModel = LocationModel.instance
+    var locationModel: LocationModelProtocol = RealLocationModel()
     
     private var locationSubscriber: AnyCancellable?
     private var momentumForecastSubscriber: AnyCancellable?
@@ -22,7 +22,7 @@ class MainVC: UIViewController {
     private let updateViewMomentumPublisher = CurrentValueSubject<WeatherData?, Error>(nil)
     private let updateViewLongTermPublisher = CurrentValueSubject<[WeatherData]?, Error>(nil)
     
-    private let scrollView = UIScrollView()
+    let scrollView = UIScrollView()
     
     public func preparedForTabBar() -> Self {
         let icon = UIImage(systemName: "cloud.fill")
@@ -45,7 +45,7 @@ class MainVC: UIViewController {
     
     private lazy var headRefreshDescriptionComponent4 = HeadRefreshDescriptionComponent4(listen: forecastModel?.networkUsage())
     private let headDayDescriptionComponent4 = HeadDayDescriptionComponent4()
-    private let headLocationDescriptionComponent4 = HeadLocationDescriptionComponent4()
+    private lazy var headLocationDescriptionComponent4 = HeadLocationDescriptionComponent4(locationModel: locationModel)
     
     private lazy var headContainer: UIView = {
         let container = UIView()
@@ -292,9 +292,9 @@ class MainVC: UIViewController {
         
         activateConstraints()
         
-        locationModel?.requestAppropriateAuthorization()
+        locationModel.setup()
         
-        locationSubscriber = locationModel?.updationPublisher.sink(
+        locationSubscriber = locationModel.updationPublisher.sink(
             receiveCompletion: { _ in },
             receiveValue: { [weak self] coordinate in
                 if let coordinate {
